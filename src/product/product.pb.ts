@@ -6,6 +6,8 @@ import { Observable } from 'rxjs';
 
 export const protobufPackage = 'product';
 
+export interface Empty {}
+
 export interface Product {
   id: number;
   name: string;
@@ -15,12 +17,36 @@ export interface Product {
   description: string;
 }
 
+export interface ListProductResponse {
+  data: Product[];
+}
+
+export interface ProductDetailRequest {
+  id: number;
+}
+
+export interface ProductDetailResponse {
+  id: number;
+  name: string;
+  stock: number;
+  price: number;
+  imageUrl: string;
+  description: string;
+  error: string[];
+  merhcantId: number;
+}
+
+export interface ListMerchantProductRequest {
+  id: number;
+}
+
 export interface CreateProductRequest {
   name: string;
   stock: number;
   price: number;
   imageUrl: string;
   description: string;
+  merchantId: number;
 }
 
 export interface CreateProductResponse {
@@ -28,27 +54,7 @@ export interface CreateProductResponse {
   error: string[];
 }
 
-export interface GetProductRequest {
-  id: number;
-}
-
-export interface GetProductResponse {
-  data: Product;
-  status: number;
-  error: string[];
-}
-
-export interface ListProductRequest {
-  merchantId: number;
-}
-
-export interface ListProductResponse {
-  data: Product[];
-  status: number;
-  error: string[];
-}
-
-export interface UpdateProductRequest {
+export interface EditProductRequest {
   id: number;
   name: string;
   stock: number;
@@ -57,7 +63,7 @@ export interface UpdateProductRequest {
   description: string;
 }
 
-export interface UpdateProductResponse {
+export interface EditProductResponse {
   status: number;
   error: string[];
 }
@@ -71,21 +77,64 @@ export interface DeleteProductResponse {
   error: string[];
 }
 
+export interface SearchProductRequest {
+  name: string;
+}
+
+export interface SearchProductResponse {
+  data: Product[];
+}
+
 export const PRODUCT_PACKAGE_NAME = 'product';
 
 export interface ProductServiceClient {
-  createProduct(request: CreateProductRequest): Observable<CreateProductResponse>;
+  listProduct(request: Empty): Observable<ListProductResponse>;
 
-  listProduct(request: ListProductRequest): Observable<ListProductResponse>;
+  productDetail(
+    request: ProductDetailRequest,
+  ): Observable<ProductDetailResponse>;
 
-  getProduct(request: GetProductRequest): Observable<GetProductResponse>;
+  listMerchantProduct(
+    request: ListMerchantProductRequest,
+  ): Observable<ListProductResponse>;
 
-  updateProduct(request: UpdateProductRequest): Observable<UpdateProductResponse>;
+  createProduct(
+    request: CreateProductRequest,
+  ): Observable<CreateProductResponse>;
 
-  deleteProduct(request: DeleteProductRequest): Observable<DeleteProductResponse>;
+  editProduct(request: EditProductRequest): Observable<EditProductResponse>;
+
+  deleteProduct(
+    request: DeleteProductRequest,
+  ): Observable<DeleteProductResponse>;
+
+  searchProduct(
+    request: SearchProductRequest,
+  ): Observable<SearchProductResponse>;
 }
 
 export interface ProductServiceController {
+  listProduct(
+    request: Empty,
+  ):
+    | Promise<ListProductResponse>
+    | Observable<ListProductResponse>
+    | ListProductResponse;
+
+  productDetail(
+    request: ProductDetailRequest,
+  ):
+    | Promise<ProductDetailResponse>
+    | Observable<ProductDetailResponse>
+    | ProductDetailResponse;
+
+  listMerchantProduct(
+    request: ListMerchantProductRequest,
+  ):
+    | Promise<ListProductResponse>
+    | Observable<ListProductResponse>
+    | ListProductResponse;
+
   createProduct(
     request: CreateProductRequest,
   ):
@@ -93,26 +142,12 @@ export interface ProductServiceController {
     | Observable<CreateProductResponse>
     | CreateProductResponse;
 
-  listProduct(
-    request: ListProductRequest,
+  editProduct(
+    request: EditProductRequest,
   ):
-    | Promise<ListProductResponse>
-    | Observable<ListProductResponse>
-    | ListProductResponse;
-
-  getProduct(
-    request: GetProductRequest,
-  ):
-    | Promise<GetProductResponse>
-    | Observable<GetProductResponse>
-    | GetProductResponse;
-
-  updateProduct(
-    request: UpdateProductRequest,
-  ):
-    | Promise<UpdateProductResponse>
-    | Observable<UpdateProductResponse>
-    | UpdateProductResponse;
+    | Promise<EditProductResponse>
+    | Observable<EditProductResponse>
+    | EditProductResponse;
 
   deleteProduct(
     request: DeleteProductRequest,
@@ -120,16 +155,25 @@ export interface ProductServiceController {
     | Promise<DeleteProductResponse>
     | Observable<DeleteProductResponse>
     | DeleteProductResponse;
+
+  searchProduct(
+    request: SearchProductRequest,
+  ):
+    | Promise<SearchProductResponse>
+    | Observable<SearchProductResponse>
+    | SearchProductResponse;
 }
 
 export function ProductServiceControllerMethods() {
   return function (constructor: Function) {
     const grpcMethods: string[] = [
-      'createProduct',
       'listProduct',
-      'getProduct',
-      'updateProduct',
+      'productDetail',
+      'listMerchantProduct',
+      'createProduct',
+      'editProduct',
       'deleteProduct',
+      'searchProduct',
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(

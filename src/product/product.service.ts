@@ -5,17 +5,19 @@ import { Repository } from 'typeorm';
 import {
   CreateProductDto,
   DeleteProductDto,
-  GetProductDto,
-  ListProductDto,
-  UpdateProductDto,
+  ProductDetailtDto,
+  ListMerchantProductDto,
+  EditProductDto,
+  SearchProductDto,
 } from './product.dto';
 import { Product } from './product.entity';
 import {
   CreateProductResponse,
   DeleteProductResponse,
-  GetProductResponse,
+  EditProductResponse,
   ListProductResponse,
-  UpdateProductResponse,
+  ProductDetailResponse,
+  SearchProductResponse,
 } from './product.pb';
 
 @Injectable()
@@ -49,17 +51,15 @@ export class ProductService {
     return { status: HttpStatus.OK, error: null };
   }
 
-  public async listProduct({
-    merchantId,
-  }: ListProductDto): Promise<ListProductResponse> {
+  public async listMerchantProduct({
+    id,
+  }: ListMerchantProductDto): Promise<ListProductResponse> {
     const products: Product[] = await this.repository.find({
-      where: { merchantId: merchantId },
+      where: { merchantId: id },
     });
 
     const response: ListProductResponse = {
       data: [],
-      status: HttpStatus.OK,
-      error: null,
     };
 
     products.forEach((x: Product) =>
@@ -81,22 +81,48 @@ export class ProductService {
     return response;
   }
 
-  public async getProduct({ id }: GetProductDto): Promise<GetProductResponse> {
+  public async listProduct(): Promise<ListProductResponse> {
+    const products: Product[] = await this.repository.find();
+
+    const response: ListProductResponse = {
+      data: [],
+    };
+
+    products.forEach((x: Product) =>
+      response.data.push({
+        id: x.id,
+        name: x.name,
+        stock: x.stock,
+        price: x.price,
+        imageUrl: x.imageUrl,
+        description: x.description,
+      }),
+    );
+
+    this.logger.log(
+      'info',
+      `listing all product found ${response.data.length} row`,
+    );
+
+    return response;
+  }
+
+  public async productDetail({
+    id,
+  }: ProductDetailtDto): Promise<ProductDetailResponse> {
     const product: Product = await this.repository.findOne({
       where: { id: id },
     });
 
-    const response: GetProductResponse = {
-      data: {
-        id: product.id,
-        name: product.name,
-        stock: product.stock,
-        price: product.price,
-        imageUrl: product.imageUrl,
-        description: product.description,
-      },
-      status: HttpStatus.OK,
+    const response: ProductDetailResponse = {
+      id: product.id,
+      name: product.name,
+      stock: product.stock,
+      price: product.price,
+      imageUrl: product.imageUrl,
+      description: product.description,
       error: null,
+      merhcantId: product.merchantId,
     };
 
     this.logger.log('info', `find product for given id: ${id}`);
@@ -104,14 +130,14 @@ export class ProductService {
     return response;
   }
 
-  public async updateProduct({
+  public async editProduct({
     id,
     name,
     stock,
     price,
     imageUrl,
     description,
-  }: UpdateProductDto): Promise<UpdateProductResponse> {
+  }: EditProductDto): Promise<EditProductResponse> {
     const product: Product = await this.repository.findOne({
       where: { id: id },
     });
@@ -136,5 +162,33 @@ export class ProductService {
 
     this.logger.log('info', `delete product for given id: ${id}`);
     return { status: HttpStatus.OK, error: null };
+  }
+
+  public async searchProduct({
+    name,
+  }: SearchProductDto): Promise<SearchProductResponse> {
+    const products: Product[] = await this.repository
+      .createQueryBuilder('product')
+      .where('product.name like :name', { name: `%${name}}%` })
+      .getMany();
+
+    const response: SearchProductResponse = {
+      data: [],
+    };
+
+    products.forEach((x: Product) =>
+      response.data.push({
+        id: x.id,
+        name: x.name,
+        stock: x.stock,
+        price: x.price,
+        imageUrl: x.imageUrl,
+        description: x.description,
+      }),
+    );
+
+    this.logger.log('info', `search product found ${response.data.length} row`);
+
+    return response;
   }
 }

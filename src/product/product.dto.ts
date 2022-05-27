@@ -2,9 +2,10 @@ import { IsNumber, IsString } from 'class-validator';
 import {
   CreateProductRequest,
   DeleteProductRequest,
-  GetProductRequest,
-  ListProductRequest,
-  UpdateProductRequest,
+  EditProductRequest,
+  ListMerchantProductRequest,
+  ProductDetailRequest,
+  SearchProductRequest,
 } from './product.pb';
 
 export class CreateProductDto implements CreateProductRequest {
@@ -27,17 +28,17 @@ export class CreateProductDto implements CreateProductRequest {
   public readonly description: string;
 }
 
-export class ListProductDto implements ListProductRequest {
-  @IsNumber()
-  public readonly merchantId: number;
-}
-
-export class GetProductDto implements GetProductRequest {
+export class ListMerchantProductDto implements ListMerchantProductRequest {
   @IsNumber()
   public readonly id: number;
 }
 
-export class UpdateProductDto implements UpdateProductRequest {
+export class ProductDetailtDto implements ProductDetailRequest {
+  @IsNumber()
+  public readonly id: number;
+}
+
+export class EditProductDto implements EditProductRequest {
   @IsNumber()
   public readonly id: number;
 
@@ -60,4 +61,9 @@ export class UpdateProductDto implements UpdateProductRequest {
 export class DeleteProductDto implements DeleteProductRequest {
   @IsNumber()
   public readonly id: number;
+}
+
+export class SearchProductDto implements SearchProductRequest {
+  @IsString()
+  public readonly name: string;
 }

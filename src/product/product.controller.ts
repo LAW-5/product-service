@@ -3,17 +3,17 @@ import { GrpcMethod } from '@nestjs/microservices';
 import {
   CreateProductDto,
   DeleteProductDto,
-  GetProductDto,
-  ListProductDto,
-  UpdateProductDto,
+  EditProductDto,
+  ListMerchantProductDto,
+  ProductDetailtDto,
 } from './product.dto';
 import {
   CreateProductResponse,
   DeleteProductResponse,
-  GetProductResponse,
+  EditProductResponse,
   ListProductResponse,
+  ProductDetailResponse,
   PRODUCT_SERVICE_NAME,
-  UpdateProductResponse,
 } from './product.pb';
 import { ProductService } from './product.service';
 
@@ -30,13 +30,22 @@ export class ProductController {
   }
 
   @GrpcMethod(PRODUCT_SERVICE_NAME, 'ListProduct')
-  private listProduct(payload: ListProductDto): Promise<ListProductResponse> {
-    return this.service.listProduct(payload);
+  private listProduct(): Promise<ListProductResponse> {
+    return this.service.listProduct();
   }
 
-  @GrpcMethod(PRODUCT_SERVICE_NAME, 'GetProduct')
-  private getProduct(payload: GetProductDto): Promise<GetProductResponse> {
-    return this.service.getProduct(payload);
+  @GrpcMethod(PRODUCT_SERVICE_NAME, 'ListMerchantProduct')
+  private listMerchantProduct(
+    payload: ListMerchantProductDto,
+  ): Promise<ListProductResponse> {
+    return this.listMerchantProduct(payload);
+  }
+
+  @GrpcMethod(PRODUCT_SERVICE_NAME, 'ProductDetail')
+  private productDetail(
+    payload: ProductDetailtDto,
+  ): Promise<ProductDetailResponse> {
+    return this.service.productDetail(payload);
   }
 
   @GrpcMethod(PRODUCT_SERVICE_NAME, 'DeleteProduct')
@@ -46,10 +55,8 @@ export class ProductController {
     return this.service.deleteProduct(payload);
   }
 
-  @GrpcMethod(PRODUCT_SERVICE_NAME, 'UpdateProduct')
-  private updateProduct(
-    payload: UpdateProductDto,
-  ): Promise<UpdateProductResponse> {
-    return this.service.updateProduct(payload);
+  @GrpcMethod(PRODUCT_SERVICE_NAME, 'EditProduct')
+  private editProduct(payload: EditProductDto): Promise<EditProductResponse> {
+    return this.service.editProduct(payload);
   }
 }

@@ -3,7 +3,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProductModule } from './product/product.module';
 import 'dotenv/config';
 import { Product } from './product/product.entity';
-import 'dotenv/config';
 
 @Module({
   imports: [
