@@ -4,6 +4,7 @@ import { Transport } from '@nestjs/microservices';
 import { join } from 'path';
 import { AppModule } from './app.module';
 import { protobufPackage } from './product/product.pb';
+import 'dotenv/config';
 
 async function bootstrap() {
   const app: INestMicroservice = await NestFactory.createMicroservice(

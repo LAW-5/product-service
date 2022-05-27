@@ -1,5 +1,6 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Repository } from 'typeorm';
 import {
   CreateProductDto,
@@ -22,6 +23,9 @@ export class ProductService {
   @InjectRepository(Product)
   private readonly repository: Repository<Product>;
 
+  @Inject(WINSTON_MODULE_PROVIDER)
+  private readonly logger: Logger;
+
   public async createProduct({
     merchantId,
     name,
@@ -39,6 +43,8 @@ export class ProductService {
     product.description = description;
 
     await this.repository.save(product);
+
+    this.logger.log('info', `create product ${name}`);
 
     return { status: HttpStatus.OK, error: null };
   }
@@ -67,6 +73,11 @@ export class ProductService {
       }),
     );
 
+    this.logger.log(
+      'info',
+      `listing all product found ${response.data.length} row`,
+    );
+
     return response;
   }
 
@@ -87,6 +98,8 @@ export class ProductService {
       status: HttpStatus.OK,
       error: null,
     };
+
+    this.logger.log('info', `find product for given id: ${id}`);
 
     return response;
   }
@@ -111,6 +124,8 @@ export class ProductService {
 
     await this.repository.save(product);
 
+    this.logger.log('info', `update product for given id: ${id}`);
+
     return { status: HttpStatus.OK, error: null };
   }
 
@@ -119,6 +134,7 @@ export class ProductService {
   }: DeleteProductDto): Promise<DeleteProductResponse> {
     await this.repository.delete({ id: id });
 
+    this.logger.log('info', `delete product for given id: ${id}`);
     return { status: HttpStatus.OK, error: null };
   }
 }
