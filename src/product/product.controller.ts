@@ -6,6 +6,7 @@ import {
   EditProductDto,
   ListMerchantProductDto,
   ProductDetailtDto,
+  SearchProductDto,
 } from './product.dto';
 import {
   CreateProductResponse,
@@ -14,6 +15,7 @@ import {
   ListProductResponse,
   ProductDetailResponse,
   PRODUCT_SERVICE_NAME,
+  SearchProductResponse,
 } from './product.pb';
 import { ProductService } from './product.service';
 
@@ -58,5 +60,12 @@ export class ProductController {
   @GrpcMethod(PRODUCT_SERVICE_NAME, 'EditProduct')
   private editProduct(payload: EditProductDto): Promise<EditProductResponse> {
     return this.service.editProduct(payload);
+  }
+
+  @GrpcMethod(PRODUCT_SERVICE_NAME, 'SearchProduct')
+  private searchProduct(
+    payload: SearchProductDto,
+  ): Promise<SearchProductResponse> {
+    return this.service.searchProduct(payload);
   }
 }
