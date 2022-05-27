@@ -40,7 +40,7 @@ export class ProductController {
   private listMerchantProduct(
     payload: ListMerchantProductDto,
   ): Promise<ListProductResponse> {
-    return this.listMerchantProduct(payload);
+    return this.service.listMerchantProduct(payload);
   }
 
   @GrpcMethod(PRODUCT_SERVICE_NAME, 'ProductDetail')
