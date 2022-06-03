@@ -189,8 +189,6 @@ export class ProductService {
 
     this.logger.log('info', `search product found ${response.data.length} row`);
 
-    console.log(products);
-
     return response;
   }
 }
