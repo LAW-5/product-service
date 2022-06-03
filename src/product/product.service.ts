@@ -169,7 +169,7 @@ export class ProductService {
   }: SearchProductDto): Promise<SearchProductResponse> {
     const products: Product[] = await this.repository
       .createQueryBuilder('product')
-      .where('product.name like :name', { name: `%${name}}%` })
+      .where('product.name like :name', { name: `%${name}%` })
       .getMany();
 
     const response: SearchProductResponse = {
@@ -188,6 +188,8 @@ export class ProductService {
     );
 
     this.logger.log('info', `search product found ${response.data.length} row`);
+
+    console.log(products);
 
     return response;
   }
