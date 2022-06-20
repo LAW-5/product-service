@@ -15,20 +15,20 @@ class CreateCli(HttpUser):
     token = None
 
     def on_start(self):
-        res = self.client.post("/auth/login", json=USER_CREDENTIAL, timeout=15)
+        res = self.client.post("/auth/login", json=USER_CREDENTIAL, timeout=20)
         self.token = res.json()["token"]
 
     @task()
     def get_all_product(self):
-        self.client.get("/product", headers={"Authorization": f"Bearer {self.token}"}, timeout=15)
+        self.client.get("/product", headers={"Authorization": f"Bearer {self.token}"}, timeout=20)
 
     @task()
     def get_product_detail(self):
-        self.client.get(f"/product/{PRODUCT_ID}", headers={"Authorization": f"Bearer {self.token}"}, timeout=15)
+        self.client.get(f"/product/{PRODUCT_ID}", headers={"Authorization": f"Bearer {self.token}"}, timeout=20)
 
 class StagesShape(LoadTestShape):
     stages = [
-        {"time": 3600, "users": 150, "spawn_rate": 50}, # first 3 hours
+        {"time": 3600, "users": 100, "spawn_rate": 50}, # first 3 hours
     ]
 
     def tick(self) -> Optional[Tuple[int, float]]:
